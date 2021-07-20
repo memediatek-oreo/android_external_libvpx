@@ -1,3 +1,8 @@
+/*
+* Copyright (C) 2014 MediaTek Inc.
+* Modification based on code covered by the mentioned copyright
+* and/or permission notice(s).
+*/
 // Copyright (c) 2012 The WebM project authors. All Rights Reserved.
 //
 // Use of this source code is governed by a BSD-style license
@@ -22,6 +27,13 @@
 
 #include "common/webmids.h"
 
+// add for mtk
+#undef LOG_TAG
+#define LOG_TAG "Mkvparser"
+
+#include <utils/Log.h>
+#include <cutils/log.h>
+// end of add for mtk
 namespace mkvparser {
 const float MasteringMetadata::kValueNotPresent = FLT_MAX;
 const long long Colour::kValueNotPresent = LLONG_MAX;
@@ -1468,7 +1480,11 @@ long Segment::Load() {
     const int status = LoadCluster();
 
     if (status < 0)  // error
-      return status;
+    {
+      ALOGD("cluster load failed! file  can't display completely");
+      return 0;  // add for mtk, make file without cue data can play
+    }
+      // return status;
 
     if (status >= 1)  // no more clusters
       return 0;
